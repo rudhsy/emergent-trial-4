@@ -76,10 +76,20 @@ code {
 }
 
 /* Smooth transitions for specific properties */
-button, a, .project-card {
+button, a {
     transition-property: background-color, border-color, color, opacity, transform, box-shadow;
     transition-duration: 200ms;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth grid transitions for project cards */
+.project-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Remove move cursor, use pointer */
+.project-card {
+    cursor: pointer !important;
 }
 
 /* Material Design 3 inspired shadows */

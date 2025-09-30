@@ -65,9 +65,20 @@ const ProjectDetailDrawer = ({ project, isOpen, onClose }) => {
             {/* Project Header */}
             <div className="mb-16">
               <div className="mb-6">
-                <h2 className="text-5xl md:text-6xl font-light tracking-tight mb-6 text-white">
-                  {project.title}
-                </h2>
+                {/* Back Button + Project Title */}
+                <div className="flex items-center gap-4 mb-6">
+                  <button
+                    onClick={onClose}
+                    className="p-3 bg-zinc-900/80 backdrop-blur-glass border border-zinc-800 elevation-2 hover:bg-zinc-800 transition-colors flex-shrink-0"
+                    style={{ borderRadius: '20px' }}
+                    aria-label="Back"
+                  >
+                    <ArrowLeft size={24} className="text-white" />
+                  </button>
+                  <h2 className="text-5xl md:text-6xl font-light tracking-tight text-white">
+                    {project.title}
+                  </h2>
+                </div>
                 <p className="text-xl text-zinc-400 mb-3">{project.category}</p>
                 <p className="text-zinc-500">{project.year}</p>
               </div>

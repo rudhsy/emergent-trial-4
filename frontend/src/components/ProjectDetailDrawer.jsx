@@ -35,19 +35,9 @@ const ProjectDetailDrawer = ({ project, isOpen, onClose }) => {
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
-        {/* Top Navigation Bar */}
-        <div className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-6">
-          {/* Back Button - Left */}
-          <button
-            onClick={onClose}
-            className="p-3 bg-zinc-900/80 backdrop-blur-glass border border-zinc-800 elevation-2 hover:bg-zinc-800 transition-colors"
-            style={{ borderRadius: '20px' }}
-            aria-label="Back"
-          >
-            <ArrowLeft size={24} className="text-white" />
-          </button>
-
-          {/* Close Button - Right */}
+        {/* Top Navigation Bar - Close Button Only */}
+        <div className="fixed top-0 right-0 z-10 px-6 py-6">
+          {/* Close Button */}
           <button
             onClick={onClose}
             className="p-3 bg-zinc-900/80 backdrop-blur-glass border border-zinc-800 elevation-2 hover:bg-zinc-800 transition-colors"

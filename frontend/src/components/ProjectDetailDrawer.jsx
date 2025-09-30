@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { X, ArrowLeft, ExternalLink } from 'lucide-react';
 
-const ProjectDetailDrawer = ({ project, isOpen, onClose, thumbnailRect }) => {
+const ProjectDetailDrawer = ({ project, isOpen, onClose }) => {
   const [showBottomBar, setShowBottomBar] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
 
   // Prevent body scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      setIsAnimating(true);
-      // Reset animation state after animation completes
-      setTimeout(() => setIsAnimating(false), 700);
     } else {
       document.body.style.overflow = 'unset';
       setShowBottomBar(false);
@@ -23,31 +19,21 @@ const ProjectDetailDrawer = ({ project, isOpen, onClose, thumbnailRect }) => {
 
   if (!project) return null;
 
-  // Calculate initial position based on thumbnail rect
-  const getInitialStyle = () => {
-    if (!thumbnailRect || !isAnimating) return {};
-    return {
-      transform: `translate(${thumbnailRect.left}px, ${thumbnailRect.top}px) scale(${thumbnailRect.width / window.innerWidth})`,
-      transformOrigin: 'top left',
-    };
-  };
-
   return (
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black transition-opacity duration-700 z-50 ${
+        className={`fixed inset-0 bg-black transition-opacity duration-500 z-50 ${
           isOpen ? 'opacity-60' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
       />
 
-      {/* Full Screen Drawer with Animation */}
+      {/* Full Screen Drawer - Simple slide from bottom animation */}
       <div
-        className={`fixed inset-0 bg-[#0f0f10] z-50 transition-all duration-700 ease-out ${
-          isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        className={`fixed inset-0 bg-[#0f0f10] z-50 transition-transform duration-500 ease-out ${
+          isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
-        style={isAnimating && isOpen ? getInitialStyle() : {}}
       >
         {/* Top Navigation Bar */}
         <div className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-6">

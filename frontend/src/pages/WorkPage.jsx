@@ -7,7 +7,6 @@ const WorkPage = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
   const [scrolled, setScrolled] = useState(false);
-  const [clickedThumbnailRect, setClickedThumbnailRect] = useState(null);
 
   // Track scroll position
   React.useEffect(() => {
@@ -47,16 +46,12 @@ const WorkPage = () => {
     setDraggingId(null);
   };
 
-  const handleProjectClick = (e, project) => {
-    // Get the clicked thumbnail's position for animation
-    const rect = e.currentTarget.getBoundingClientRect();
-    setClickedThumbnailRect(rect);
+  const handleProjectClick = (project) => {
     setSelectedProject(project);
   };
 
   const handleCloseDrawer = () => {
     setSelectedProject(null);
-    setClickedThumbnailRect(null);
   };
 
   // Bento grid layout - define which projects should be large
@@ -80,7 +75,7 @@ const WorkPage = () => {
       {/* Hero Section - Centered name that fades on scroll */}
       <section className={`max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24 transition-all duration-500 ${scrolled ? 'opacity-0 -translate-y-8' : 'opacity-100 translate-y-0'}`}>
         <div className="text-center">
-          <h1 className="text-7xl md:text-9xl font-bold tracking-tight mb-8 text-white">
+          <h1 className="text-7xl md:text-9xl font-light tracking-tight mb-8 text-white">
             ANIRUDH
           </h1>
           <p className="text-xl text-zinc-400">
@@ -99,8 +94,8 @@ const WorkPage = () => {
               onDragStart={(e) => handleDragStart(e, project.id)}
               onDragOver={(e) => handleDragOver(e, project.id)}
               onDragEnd={handleDragEnd}
-              onClick={(e) => handleProjectClick(e, project)}
-              className={`group cursor-pointer transition-all duration-300 project-card ${
+              onClick={() => handleProjectClick(project)}
+              className={`group cursor-pointer transition-all duration-400 project-card ${
                 draggingId === project.id ? 'opacity-50' : 'opacity-100'
               } ${getBentoSize(index)}`}
               style={{ transitionProperty: 'opacity, transform, grid-column, grid-row' }}
@@ -110,31 +105,30 @@ const WorkPage = () => {
                 className="relative overflow-hidden bg-zinc-900 border border-zinc-800 h-full elevation-1 hover:elevation-3 transition-all duration-300"
                 style={{ borderRadius: '24px' }}
               >
-                {/* Project Thumbnail */}
+                {/* Project Thumbnail - Plain Image */}
                 <div className={`relative overflow-hidden ${getAspectRatio(index)}`}>
                   <img
                     src={project.thumbnail}
                     alt={project.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full object-cover"
                     draggable="false"
                   />
-                  {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
-                    <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      View Project
-                    </span>
-                  </div>
+                  
+                  {/* Overlay Gradient for better text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
 
-                {/* Project Info */}
-                <div className="p-6 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium tracking-tight text-white group-hover:text-zinc-300 transition-colors">
-                      {project.title}
-                    </h3>
-                    <span className="text-xs text-zinc-500">{project.year}</span>
+                {/* Project Info - Slides up from bottom on hover */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                  <div className="flex items-end justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium tracking-tight text-white mb-1">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-zinc-300">{project.category}</p>
+                    </div>
+                    <span className="text-xs text-zinc-400 ml-4">{project.year}</span>
                   </div>
-                  <p className="text-sm text-zinc-400">{project.category}</p>
                 </div>
               </div>
             </div>
@@ -152,7 +146,6 @@ const WorkPage = () => {
         project={selectedProject}
         isOpen={!!selectedProject}
         onClose={handleCloseDrawer}
-        thumbnailRect={clickedThumbnailRect}
       />
     </div>
   );

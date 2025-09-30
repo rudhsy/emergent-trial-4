@@ -39,22 +39,38 @@ const WorkPage = () => {
     setSelectedProject(null);
   };
 
+  // Bento grid layout - define which projects should be large
+  const getBentoSize = (index) => {
+    // Make 1st and 4th project larger (2x2), others normal
+    if (index === 0 || index === 3) {
+      return 'md:col-span-2 md:row-span-2';
+    }
+    return 'md:col-span-1 md:row-span-1';
+  };
+
+  const getAspectRatio = (index) => {
+    if (index === 0 || index === 3) {
+      return 'aspect-[4/3]';
+    }
+    return 'aspect-[4/3]';
+  };
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 py-16">
-        <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-6">
-          Selected Work
+      {/* Hero Section - Name that moves to corner on scroll */}
+      <section className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
+        <h1 className="text-7xl md:text-9xl font-light tracking-tight mb-8 text-white">
+          Anirudh
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl">
-          A collection of interaction design projects focusing on user experience and digital innovation.
+        <p className="text-xl text-zinc-400 max-w-2xl">
+          Interaction Designer crafting meaningful digital experiences
         </p>
       </section>
 
-      {/* Projects Grid - Draggable */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-          {projectList.map((project) => (
+      {/* Bento Grid - Google Material Design Style */}
+      <section className="max-w-7xl mx-auto px-6 md:px-12 pb-32">
+        <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-auto gap-4 md:gap-6">
+          {projectList.map((project, index) => (
             <div
               key={project.id}
               draggable
@@ -62,35 +78,41 @@ const WorkPage = () => {
               onDragOver={(e) => handleDragOver(e, project.id)}
               onDragEnd={handleDragEnd}
               onClick={() => handleProjectClick(project)}
-              className={`group cursor-move transition-all duration-300 ${
+              className={`group cursor-move transition-all duration-300 project-card ${
                 draggingId === project.id ? 'opacity-50 scale-95' : 'opacity-100'
-              }`}
+              } ${getBentoSize(index)}`}
             >
-              {/* Project Thumbnail */}
-              <div className="relative overflow-hidden bg-gray-100 aspect-[4/3] mb-4">
-                <img
-                  src={project.thumbnail}
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  draggable="false"
-                />
-                {/* Hover Overlay */}
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
-                  <span className="text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    View Project
-                  </span>
+              {/* Project Card with Material Design Corner Radius */}
+              <div 
+                className="relative overflow-hidden bg-zinc-900 border border-zinc-800 h-full elevation-1 hover:elevation-3 transition-all duration-300"
+                style={{ borderRadius: '24px' }}
+              >
+                {/* Project Thumbnail */}
+                <div className={`relative overflow-hidden ${getAspectRatio(index)}`}>
+                  <img
+                    src={project.thumbnail}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    draggable="false"
+                  />
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
+                    <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      View Project
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Project Info */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-medium tracking-tight group-hover:opacity-60 transition-opacity">
-                    {project.title}
-                  </h3>
-                  <span className="text-sm text-gray-500">{project.year}</span>
+                {/* Project Info */}
+                <div className="p-6 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium tracking-tight text-white group-hover:text-zinc-300 transition-colors">
+                      {project.title}
+                    </h3>
+                    <span className="text-xs text-zinc-500">{project.year}</span>
+                  </div>
+                  <p className="text-sm text-zinc-400">{project.category}</p>
                 </div>
-                <p className="text-sm text-gray-600">{project.category}</p>
               </div>
             </div>
           ))}
@@ -98,7 +120,7 @@ const WorkPage = () => {
 
         {/* Drag Hint */}
         <div className="mt-12 text-center">
-          <p className="text-sm text-gray-400 italic">Drag thumbnails to rearrange</p>
+          <p className="text-sm text-zinc-600 italic">Drag thumbnails to rearrange</p>
         </div>
       </section>
 

@@ -6,6 +6,21 @@ const WorkPage = () => {
   const [projectList, setProjectList] = useState(projects);
   const [selectedProject, setSelectedProject] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Track scroll position
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleDragStart = (e, id) => {
     setDraggingId(id);

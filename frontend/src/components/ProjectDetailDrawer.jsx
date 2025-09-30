@@ -1,13 +1,20 @@
-import React, { useEffect } from 'react';
-import { X, ExternalLink } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { X, ArrowLeft, ExternalLink } from 'lucide-react';
 
-const ProjectDetailDrawer = ({ project, isOpen, onClose }) => {
+const ProjectDetailDrawer = ({ project, isOpen, onClose, thumbnailRect }) => {
+  const [showBottomBar, setShowBottomBar] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
   // Prevent body scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      setIsAnimating(true);
+      // Reset animation state after animation completes
+      setTimeout(() => setIsAnimating(false), 700);
     } else {
       document.body.style.overflow = 'unset';
+      setShowBottomBar(false);
     }
     return () => {
       document.body.style.overflow = 'unset';
@@ -16,77 +23,115 @@ const ProjectDetailDrawer = ({ project, isOpen, onClose }) => {
 
   if (!project) return null;
 
+  // Calculate initial position based on thumbnail rect
+  const getInitialStyle = () => {
+    if (!thumbnailRect || !isAnimating) return {};
+    return {
+      transform: `translate(${thumbnailRect.left}px, ${thumbnailRect.top}px) scale(${thumbnailRect.width / window.innerWidth})`,
+      transformOrigin: 'top left',
+    };
+  };
+
   return (
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black transition-opacity duration-500 z-50 ${
+        className={`fixed inset-0 bg-black transition-opacity duration-700 z-50 ${
           isOpen ? 'opacity-60' : 'opacity-0 pointer-events-none'
         }`}
         onClick={onClose}
       />
 
-      {/* Full Screen Drawer */}
+      {/* Full Screen Drawer with Animation */}
       <div
-        className={`fixed inset-0 bg-[#0f0f10] z-50 transition-transform duration-700 ease-in-out ${
-          isOpen ? 'translate-y-0' : 'translate-y-full'
+        className={`fixed inset-0 bg-[#0f0f10] z-50 transition-all duration-700 ease-out ${
+          isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
+        style={isAnimating && isOpen ? getInitialStyle() : {}}
       >
-        {/* Close Button - Floating with Material Design styling */}
-        <button
-          onClick={onClose}
-          className="fixed top-6 right-6 z-10 p-3 bg-zinc-900/80 backdrop-blur-glass border border-zinc-800 elevation-2 hover:bg-zinc-800 transition-colors"
-          style={{ borderRadius: '20px' }}
-          aria-label="Close"
-        >
-          <X size={24} className="text-white" />
-        </button>
+        {/* Top Navigation Bar */}
+        <div className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-6">
+          {/* Back Button - Left */}
+          <button
+            onClick={onClose}
+            className="p-3 bg-zinc-900/80 backdrop-blur-glass border border-zinc-800 elevation-2 hover:bg-zinc-800 transition-colors"
+            style={{ borderRadius: '20px' }}
+            aria-label="Back"
+          >
+            <ArrowLeft size={24} className="text-white" />
+          </button>
+
+          {/* Close Button - Right */}
+          <button
+            onClick={onClose}
+            className="p-3 bg-zinc-900/80 backdrop-blur-glass border border-zinc-800 elevation-2 hover:bg-zinc-800 transition-colors"
+            style={{ borderRadius: '20px' }}
+            aria-label="Close"
+          >
+            <X size={24} className="text-white" />
+          </button>
+        </div>
 
         {/* Content - Full Screen Scrollable */}
-        <div className="h-full overflow-y-auto">
-          <div className="max-w-5xl mx-auto px-6 md:px-12 py-24">
+        <div 
+          className="h-full overflow-y-auto"
+          onMouseMove={(e) => {
+            // Show bottom bar when mouse is near bottom
+            const windowHeight = window.innerHeight;
+            if (e.clientY > windowHeight - 100) {
+              setShowBottomBar(true);
+            } else {
+              setShowBottomBar(false);
+            }
+          }}
+        >
+          <div className="max-w-5xl mx-auto px-6 md:px-12 py-24 pb-32">
             {/* Project Header */}
             <div className="mb-16">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2 className="text-5xl md:text-6xl font-light tracking-tight mb-6 text-white">
-                    {project.title}
-                  </h2>
-                  <p className="text-xl text-zinc-400 mb-3">{project.category}</p>
-                  <p className="text-zinc-500">{project.year}</p>
-                </div>
+              <div className="mb-6">
+                <h2 className="text-5xl md:text-6xl font-light tracking-tight mb-6 text-white">
+                  {project.title}
+                </h2>
+                <p className="text-xl text-zinc-400 mb-3">{project.category}</p>
+                <p className="text-zinc-500">{project.year}</p>
               </div>
               <p className="text-xl text-zinc-300 leading-relaxed max-w-3xl">
                 {project.description}
               </p>
             </div>
 
-            {/* Project Images - Behance Reel Style with Material Design Corner Radius */}
+            {/* Project Images - Full Width without Bento Grid */}
             <div className="space-y-8 mb-16">
               {project.images.map((image, index) => (
-                <div 
-                  key={index} 
-                  className="w-full overflow-hidden elevation-2"
-                  style={{ borderRadius: '24px' }}
-                >
+                <div key={index} className="w-full">
                   <img
                     src={image}
                     alt={`${project.title} - Image ${index + 1}`}
                     className="w-full h-auto object-cover"
+                    style={{ borderRadius: '24px' }}
                   />
                 </div>
               ))}
             </div>
+          </div>
+        </div>
 
-            {/* View on Behance Link */}
-            <div className="pt-12 border-t border-zinc-800">
+        {/* Bottom Menu Bar - Slides up on hover */}
+        <div
+          className={`fixed bottom-0 left-0 right-0 z-20 transition-transform duration-500 ease-out ${
+            showBottomBar ? 'translate-y-0' : 'translate-y-full'
+          }`}
+        >
+          <div className="bg-zinc-900/95 backdrop-blur-glass border-t border-zinc-800 px-6 md:px-12 py-6">
+            <div className="max-w-5xl mx-auto flex items-center justify-center">
               <a
                 href={project.behanceLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-3 text-white hover:text-zinc-300 transition-colors group"
+                className="inline-flex items-center space-x-3 text-white hover:text-zinc-300 transition-colors group px-6 py-3 bg-zinc-800 hover:bg-zinc-700 transition-all"
+                style={{ borderRadius: '20px' }}
               >
-                <span className="text-lg">View full project on Behance</span>
+                <span className="text-base font-medium">View on Behance</span>
                 <ExternalLink size={20} className="group-hover:translate-x-1 transition-transform" />
               </a>
             </div>

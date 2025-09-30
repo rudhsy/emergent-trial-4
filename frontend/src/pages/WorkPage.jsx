@@ -7,6 +7,7 @@ const WorkPage = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [draggingId, setDraggingId] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [clickedThumbnailRect, setClickedThumbnailRect] = useState(null);
 
   // Track scroll position
   React.useEffect(() => {
@@ -46,12 +47,16 @@ const WorkPage = () => {
     setDraggingId(null);
   };
 
-  const handleProjectClick = (project) => {
+  const handleProjectClick = (e, project) => {
+    // Get the clicked thumbnail's position for animation
+    const rect = e.currentTarget.getBoundingClientRect();
+    setClickedThumbnailRect(rect);
     setSelectedProject(project);
   };
 
   const handleCloseDrawer = () => {
     setSelectedProject(null);
+    setClickedThumbnailRect(null);
   };
 
   // Bento grid layout - define which projects should be large
@@ -72,14 +77,16 @@ const WorkPage = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section - Name that moves to corner on scroll */}
-      <section className={`max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24 transition-opacity duration-500 ${scrolled ? 'opacity-0 -translate-y-8' : 'opacity-100 translate-y-0'}`}>
-        <h1 className="text-7xl md:text-9xl font-light tracking-tight mb-8 text-white">
-          Anirudh
-        </h1>
-        <p className="text-xl text-zinc-400 max-w-2xl">
-          Interaction Designer crafting meaningful digital experiences
-        </p>
+      {/* Hero Section - Centered name that fades on scroll */}
+      <section className={`max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24 transition-all duration-500 ${scrolled ? 'opacity-0 -translate-y-8' : 'opacity-100 translate-y-0'}`}>
+        <div className="text-center">
+          <h1 className="text-7xl md:text-9xl font-bold tracking-tight mb-8 text-white">
+            ANIRUDH
+          </h1>
+          <p className="text-xl text-zinc-400">
+            Interaction Designer crafting meaningful digital experiences
+          </p>
+        </div>
       </section>
 
       {/* Bento Grid - Google Material Design Style */}
@@ -92,10 +99,11 @@ const WorkPage = () => {
               onDragStart={(e) => handleDragStart(e, project.id)}
               onDragOver={(e) => handleDragOver(e, project.id)}
               onDragEnd={handleDragEnd}
-              onClick={() => handleProjectClick(project)}
-              className={`group cursor-move transition-all duration-300 project-card ${
-                draggingId === project.id ? 'opacity-50 scale-95' : 'opacity-100'
+              onClick={(e) => handleProjectClick(e, project)}
+              className={`group cursor-pointer transition-all duration-300 project-card ${
+                draggingId === project.id ? 'opacity-50' : 'opacity-100'
               } ${getBentoSize(index)}`}
+              style={{ transitionProperty: 'opacity, transform, grid-column, grid-row' }}
             >
               {/* Project Card with Material Design Corner Radius */}
               <div 
@@ -144,6 +152,7 @@ const WorkPage = () => {
         project={selectedProject}
         isOpen={!!selectedProject}
         onClose={handleCloseDrawer}
+        thumbnailRect={clickedThumbnailRect}
       />
     </div>
   );

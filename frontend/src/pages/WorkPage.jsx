@@ -73,7 +73,7 @@ const WorkPage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Name that moves to corner on scroll */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
+      <section className={`max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24 transition-opacity duration-500 ${scrolled ? 'opacity-0 -translate-y-8' : 'opacity-100 translate-y-0'}`}>
         <h1 className="text-7xl md:text-9xl font-light tracking-tight mb-8 text-white">
           Anirudh
         </h1>
